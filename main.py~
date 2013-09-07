@@ -1,0 +1,62 @@
+import webapp2
+
+form = """ 
+<form method="post">
+Please enter your Name and birthday:</br>
+Name:<input type="text" name="name"></br>
+Day:<input type="text" name="day" >
+Month:<input  type="text" name="month">
+Year:<input type="text"  name="year">
+<input type="submit">
+</form>
+"""
+
+months = ['January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December']
+          
+def validMonth(month):
+    for a in months:
+        if a.lower()==month.lower():
+            return a;
+
+
+def validDay(day):
+    if day and day.isdigit():
+        day=int(day)
+        if (day<=31 and day>0):
+            return day;
+
+
+def validYear(year):
+    if(len(year)==4):
+        return year
+
+class MainHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(form)
+    def post(self):
+        Vday = validDay(self.request.get('day'))
+        Vmonth = validMonth(self.request.get('month'))
+        Vyear = validYear(self.request.get('year'))
+        Vname = self.request.get('name')
+        data=(Vname, Vday, Vmonth, Vyear)
+        if not (Vday and Vmonth and Vyear and Vname):
+            self.response.out.write(form)
+        else:
+            s="Thanks! Mr.%s, your date of birth is %s,%s,%s" %data
+            self.response.out.write(s)	
+	
+
+app = webapp2.WSGIApplication([
+    ('/', MainHandler)
+], debug=True)
